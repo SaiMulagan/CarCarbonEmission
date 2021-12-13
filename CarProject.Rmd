@@ -1,0 +1,75 @@
+---
+title: "Final Project- Co2 Emissions"
+author: "Sai Mulagan"
+date: "12/6/2021"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Summary of data set
+```{r}
+library(readr)
+library(stringr)
+CARbon=read.csv("CO2 Emissions_Canada.csv",header = TRUE)
+str(CARbon)
+mean(CARbon$CO2.Emissions.g.km.)
+```
+plotting Engine size and Carbon Emissions
+```{r}
+library(tidyverse)
+CARbon%>%
+ggplot(aes(x=Engine.Size.L.,y=CO2.Emissions.g.km.))+
+  geom_point(alpha=0.5)+ 
+  ggtitle("Engine size vs Emissions") +
+  xlab("Engine Size (Liters)") + ylab("Carbon Emissions")
+```
+Correlation is strong positive relationship
+```{r}
+cor(CARbon$Engine.Size.L.,CARbon$CO2.Emissions.g.km.)
+```
+
+
+plotting Cylinders and Carbon Emissions
+```{r}
+boxplot(CO2.Emissions.g.km.~Cylinders,data=CARbon, main="Cylinders vs Emissions",
+   xlab="Number of Cylinders", ylab="Carbon Emissions")
+```
+Correlation is strong positive relationship
+```{r}
+cor(CARbon$Cylinders,CARbon$CO2.Emissions.g.km.)
+```
+plotting Fuel Consumption and Carbon Emissions
+```{r}
+CARbon%>%
+  ggplot(aes(x=Fuel.Consumption.Comb..mpg.,y=CO2.Emissions.g.km.))+
+  geom_point(alpha=0.5)+
+  ggtitle("Fuel Consumption vs Emissions") +
+  xlab("Fuel Consumption (mpg)") + ylab("Carbon Emissions")
+```
+Correlation is strong positive relationship
+```{r}
+cor(CARbon$Fuel.Consumption.Comb..mpg.,CARbon$CO2.Emissions.g.km.)
+```
+R squared value is 0.9274. This shows how all Variables are important to find carbon emissions. Most important is fuel type.
+```{r}
+linear_model<-lm(CO2.Emissions.g.km.~Engine.Size.L.+Cylinders+Fuel.Consumption.Comb..mpg.+Fuel.Type,CARbon)
+linear_model
+summary(linear_model)
+
+```
+Equation to find carbon emissions of a car: CO2.Emissions.g.km.=377.171 + (7.30119*Engine.Size.L.) +(6.34945*Cylinders)+(-5.76000*Fuel.Consumption.Comb..mpg.)+(-74.24595*Fuel.TypeE) +(-101.83172*Fuel.TypeN)+(-23.38014*Fuel.TypeX)+(-27.14213*Fuel.TypeZ)
+```{r}
+Engine.Size.L.=0.5
+Cylinders=2
+Fuel.Consumption.Comb..mpg.=80
+Fuel.Type='X'
+
+single_obs<-data.frame(Engine.Size.L.=0.5,Cylinders=2,Fuel.Consumption.Comb..mpg.=60,Fuel.Type='X')
+predict(linear_model,single_obs)
+
+```
+
